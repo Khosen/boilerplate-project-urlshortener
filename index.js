@@ -35,46 +35,46 @@ const generateShortUrl = (id) => {
 };
 
 // Route to shorten a URL
-app.post('/api/shorturl', (req, res) => {
-    const { url} = req.body;
+app.post('/api/short_url', (req, res) => {
+    const { original_url} = req.body;
 
-    if (!url) {
-      console.log(url);
+    if (!original_url) {
+      console.log(original_url);
         return res.status(400).json({ message: 'Original URL is required' });
         //console.log(url)
     }
 
     // Check if the original URL already has a shortened version
-    for (const [shortUrl, urls] of Object.entries(urlMap)) {
-        if (urls === url) {
-            return res.json({ shortUrl, url });
+    for (const [short_url, urls] of Object.entries(urlMap)) {
+        if (urls === original_url) {
+            return res.json({ original_url, short_url });
         }
     }
 
     // Generate a new short URL
-    const shortUrl = generateShortUrl(nextId);
+    const short_url = generateShortUrl(nextId);
     
     // Store the mapping in memory
-    urlMap[shortUrl] = url;
+    urlMap[short_url] = original_url;
     
     // Increment the ID for the next URL
     nextId++;
 
-    res.status(201).json({ shortUrl, url });
+    res.status(201).json({ original_url, short_url });
 });
 
 // Route to resolve a short URL to its original URL
-app.get('/api/shorturl/:shorturl', (req, res) => {
-    const { shortUrl } = req.params;
+app.get('/api/shorturl/:shortUrl', (req, res) => {
+    const { short_url } = req.params;
 
     // Look up the original URL
-    const original_url = urlMap[shortUrl];
+    const original_url = urlMap[short_url];
 
     if (!original_url) {
         return res.status(404).json({ message: 'Short URL not found' });
     }
 
-    res.redirect(url);
+    res.redirect(original_url);
 });
 
 
